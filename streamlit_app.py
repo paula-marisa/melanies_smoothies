@@ -6,7 +6,7 @@ from snowflake.snowpark.session import Session
 connection_parameters = st.secrets["connections"]["snowflake"]
 session = Session.builder.configs(connection_parameters).create()
 
-# Garante que a base de dados e o esquema corretos estão ativos
+session.sql("USE WAREHOUSE COMPUTE-WH").collect()
 session.sql("USE DATABASE SMOOTHIES").collect()
 session.sql("USE SCHEMA PUBLIC").collect()
 
