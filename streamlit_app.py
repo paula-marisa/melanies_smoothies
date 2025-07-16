@@ -39,7 +39,8 @@ if ingredients_list:
 
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
-        smoothiefroot_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
+        st.subheader(fruit_chosen + 'Nutrition Information')
+        smoothiefroot_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
         if smoothiefroot_response.status_code == 200:
           fruit_data = smoothiefroot_response.json()
 
