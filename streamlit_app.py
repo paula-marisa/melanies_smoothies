@@ -1,15 +1,14 @@
 import streamlit as st
 from snowflake.snowpark.session import Session
-from snowflake.snowpark.functions import col
 
-# Ligar ao Snowflake com segredos
+# Criar sessão
 connection_parameters = st.secrets["connections"]["snowflake"]
 session = Session.builder.configs(connection_parameters).create()
 
-# ⚠️ Corrigir uso de warehouse com hífen
-session.sql('USE WAREHOUSE "COMPUTE-WH"').collect()
-session.sql("USE DATABASE SMOOTHIES").collect()
-session.sql("USE SCHEMA PUBLIC").collect()
+# Testar warehouses disponíveis
+warehouses = session.sql("SHOW WAREHOUSES").collect()
+st.write("🔍 Warehouses disponíveis:")
+st.write(warehouses)
 
 # Título
 st.title(f":cup_with_straw: Customize your Smoothie :cup_with_straw:")
