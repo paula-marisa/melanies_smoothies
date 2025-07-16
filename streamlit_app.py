@@ -46,12 +46,9 @@ if ingredients_list:
           # Criar dataframe a partir da parte nutricional
           nutrition_data = fruit_data["nutritions"]
           nutrition_df = pd.DataFrame([nutrition_data], index=[fruit_data["name"]])
-
-          st.subheader("Nutritional info for Watermelon")
           st.dataframe(nutrition_df, use_container_width=True)
         else:
           st.error("Não foi possível obter dados nutricionais da API.")
-
 
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
             values ('""" + ingredients_string + """', '""" + name_on_order + """')"""
