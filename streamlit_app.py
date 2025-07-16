@@ -1,12 +1,13 @@
 import streamlit as st
-from snowflake.snowpark.functions import col
 from snowflake.snowpark.session import Session
+from snowflake.snowpark.functions import col
 
-# Criar sessão Snowflake
+# Ligar ao Snowflake com segredos
 connection_parameters = st.secrets["connections"]["snowflake"]
 session = Session.builder.configs(connection_parameters).create()
 
-session.sql("USE WAREHOUSE COMPUTE-WH").collect()
+# ⚠️ Corrigir uso de warehouse com hífen
+session.sql('USE WAREHOUSE "COMPUTE-WH"').collect()
 session.sql("USE DATABASE SMOOTHIES").collect()
 session.sql("USE SCHEMA PUBLIC").collect()
 
