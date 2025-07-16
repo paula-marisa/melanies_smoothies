@@ -1,6 +1,7 @@
 import streamlit as st
 from snowflake.snowpark.session import Session
 from snowflake.snowpark.functions import col, when_matched
+import requests
 
 # Conectar ao Snowflake com segredos do Streamlit
 connection_parameters = st.secrets["connections"]["snowflake"]
@@ -11,47 +12,45 @@ session.sql('USE WAREHOUSE "COMPUTE_WH"').collect()
 session.sql("USE DATABASE SMOOTHIES").collect()
 session.sql("USE SCHEMA PUBLIC").collect()
 
-# 🎨 Título da aplicação
-st.title(":cup_with_straw: Customize your Smoothie :cup_with_straw:")
-st.write("Choose the fruits you want in your custom Smoothie!")
-
-# ✏️ Nome do cliente
-name_on_order = st.text_input("Name on Smoothie:")
-if name_on_order:
-    st.write("The name on your Smoothie will be:", name_on_order)
-
-# 🍓 Obter frutas disponíveis
-try:
-    fruit_df = session.table("FRUIT_OPTIONS").select(col("FRUIT_NAME"))
-    fruit_options = [row["FRUIT_NAME"] for row in fruit_df.collect()]
-except Exception as e:
-    st.error("Erro ao carregar as frutas disponíveis.")
-    st.exception(e)
-    st.stop()
-
-# 🧃 Multiselect com máximo de 5 frutas
-ingredients_list = st.multiselect(
-    "Choose up to 5 ingredients:",
-    fruit_options,
-    max_selections=5
+# Write directly to the app
+st.title(f":cup_with_straw: Customize your Smoothie :cup_with_straw:")
+st.write(
+  """Choose the fruits you want in your custom Smoothie!
+  """
 )
 
-# 📤 Submissão da encomenda
-if ingredients_list and name_on_order:
-    ingredients_string = ' '.join(ingredients_list)
+name_on_order = st.text_input("Name on Smoothie:")
+st.write("The name on your Smoothie will be: ", name_on_order)
 
-    my_insert_stmt = f"""
-        INSERT INTO smoothies.public.orders (ingredients, name_on_order)
-        VALUES ('{ingredients_string}', '{name_on_order}')
-    """
+#session = get_active_session()
+cnx = st.connection("snowflake")
+session = cnx.session()
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 
-    if st.button("Submit order"):
-        try:
-            session.sql(my_insert_stmt).collect()
-            st.success("✅ Your Smoothie is ordered!")
-        except Exception as e:
-            st.error("Erro ao submeter o pedido.")
-            st.exception(e)
-else:
-    st.info("Please select at least one ingredient and enter your name.")
+ingredients_list = st.multiselect(
+    'Choose up to 5 ingredients:'
+    , my_dataframe
+    , max_selections=5
+)
 
+if ingredients_list:
+    ingredients_string = ''
+
+    for fruit_chosen in ingredients_list:
+        ingredients_string += fruit_chosen + ' '
+
+    my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
+            values ('""" + ingredients_string + """', '""" + name_on_order + """')"""
+
+    #st.write(my_insert_stmt)
+    #st.stop()
+
+    time_to_insert = st.button('Submit order')
+
+    if time_to_insert:
+        session.sql(my_insert_stmt).collect()
+
+        st.success('Your Smoothie is ordered!', icon="✅")
+
+smoothiefroot_response = requests.get("https:my.smoothiefroot.com/api/fruit/watermelon")
+st.text(smoothiefroot_response.json())
