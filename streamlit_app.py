@@ -50,7 +50,7 @@ if ingredients_list:
         else:
           st.warning(f"Não foi possível obter dados de '{fruit_chosen}'. Verifica se existe na API Fruityvice.")
     
-  my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
+    my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
             values ('""" + ingredients_string + """', '""" + name_on_order + """')"""
 
     #st.write(my_insert_stmt)
