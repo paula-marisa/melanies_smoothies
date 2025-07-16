@@ -2,6 +2,7 @@ import streamlit as st
 from snowflake.snowpark.session import Session
 from snowflake.snowpark.functions import col, when_matched
 import requests
+import pandas as pd
 
 # Conectar ao Snowflake com segredos do Streamlit
 connection_parameters = st.secrets["connections"]["snowflake"]
