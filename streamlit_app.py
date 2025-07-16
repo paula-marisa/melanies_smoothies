@@ -53,5 +53,15 @@ if ingredients_list:
         st.success('Your Smoothie is ordered!', icon="✅")
 
 smoothiefroot_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
-#st.text(smoothiefroot_response.json())
-sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_with=True)
+
+if smoothiefroot_response.status_code == 200:
+    fruit_data = smoothiefroot_response.json()
+
+    # Criar dataframe a partir da parte nutricional
+    nutrition_data = fruit_data["nutritions"]
+    nutrition_df = pd.DataFrame([nutrition_data], index=[fruit_data["name"]])
+
+    st.subheader("Nutritional info for Watermelon")
+    st.dataframe(nutrition_df, use_container_width=True)
+else:
+    st.error("Não foi possível obter dados nutricionais da API.")
