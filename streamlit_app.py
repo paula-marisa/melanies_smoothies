@@ -40,7 +40,13 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         st.subheader(fruit_chosen + 'Nutrition Information')
-        api_fruit_name = fruit_chosen.lower().replace(" ", "_")
+        def normalize_fruit_name(fruit):
+          fruit = fruit.lower().strip()
+          if fruit.endswith("s"):
+            fruit = fruit[:-1]  # remove plural simples
+            return fruit.replace(" ", "_")
+        api_fruit_name = normalize_fruit_name(fruit_chosen)
+
         smoothiefroot_response = requests.get(f"https://fruityvice.com/api/fruit/{api_fruit_name}")
         if smoothiefroot_response.status_code == 200:
           fruit_data = smoothiefroot_response.json()
