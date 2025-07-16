@@ -6,6 +6,10 @@ from snowflake.snowpark.session import Session
 connection_parameters = st.secrets["connections"]["snowflake"]
 session = Session.builder.configs(connection_parameters).create()
 
+# Garante que a base de dados e o esquema corretos estão ativos
+session.sql("USE DATABASE SMOOTHIES").collect()
+session.sql("USE SCHEMA PUBLIC").collect()
+
 # Título
 st.title(f":cup_with_straw: Customize your Smoothie :cup_with_straw:")
 st.write("Choose the fruits you want in your custom Smoothie!")
