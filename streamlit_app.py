@@ -40,18 +40,17 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         st.subheader(fruit_chosen + 'Nutrition Information')
-        smoothiefroot_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
+        api_fruit_name = fruit_chosen.lower().replace(" ", "_")
+        smoothiefroot_response = requests.get(f"https://fruityvice.com/api/fruit/{api_fruit_name}")
         if smoothiefroot_response.status_code == 200:
           fruit_data = smoothiefroot_response.json()
-
-          # Criar dataframe a partir da parte nutricional
           nutrition_data = fruit_data["nutritions"]
           nutrition_df = pd.DataFrame([nutrition_data], index=[fruit_data["name"]])
           st.dataframe(nutrition_df, use_container_width=True)
         else:
-          st.error("Não foi possível obter dados nutricionais da API.")
-
-    my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
+          st.warning(f"Não foi possível obter dados de '{fruit_chosen}'. Verifica se existe na API Fruityvice.")
+    
+  my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
             values ('""" + ingredients_string + """', '""" + name_on_order + """')"""
 
     #st.write(my_insert_stmt)
